@@ -47,7 +47,14 @@ class datoformulario:
         pass
 
 
+class clase_token:
+    def __init__(self,valor,linea,columna):
+        self.valor = valor
+        self.linea = linea
+        self.columna = columna
 
+    def string(self):
+        return self.valor + "---" + str(self.linea) + "---" + str(self.columna)
 
 
 
@@ -58,10 +65,25 @@ class analizar_form:
     def __init__(self):
         self.lista_tokens = []
         self.texto= ""
+        self.lista_errores = []
         self.lista_formualrios=[]
         self.string_html=""
-        self.analizador()
         self.linea=0
+        self.columna = 0
+        self.analizador()
+        if len(self.lista_errores)==0:
+            self.menu()
+
+    def menu(self):
+        
+        inicio = "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"estilo.css\" media=\"screen\" /></head><body>"
+       
+        #print(datos.string_html)
+       
+        final = inicio + self.string_html  + "</tbody></table></html></body>"
+        f = open ('report_202001574.html','w')
+        f.write(final)
+        f.close()
 
     def leer(self):
             Tk().withdraw()
@@ -80,7 +102,9 @@ class analizar_form:
             return archivodata
 
     def analizador(self):
-        self.linea=0
+        self.lista_errores = []
+        self.linea = 1
+        self.columna = 1
         self.string_html = ""
         self.texto =self.leer()
         objeto=form()
@@ -106,34 +130,36 @@ class analizar_form:
                     objeto.valores_activado = True
                 
 
-
-                self.lista_tokens.append(lectura)
+                self.columna = self.columna + len(lectura)
+                self.lista_tokens.append(clase_token(lectura,self.linea,self.columna))
 
             elif letra == "~":
                 self.quitar_primera_letra()
-                
-                self.lista_tokens.append("~")
+                self.columna = self.columna + 1
+                self.lista_tokens.append(clase_token("~",self.linea,self.columna))
             elif letra == "[":
                 self.quitar_primera_letra()
                 objeto.valores=[]
-                self.lista_tokens.append("[")
+                self.columna = self.columna + 1
+                self.lista_tokens.append(clase_token("[",self.linea,self.columna))
             elif letra == "]":
                 
-
+                self.columna = self.columna + 1
                 self.quitar_primera_letra()
-                self.lista_tokens.append("]")
+                self.lista_tokens.append(clase_token("]",self.linea,self.columna))
             elif letra == "-":
                 self.quitar_primera_letra()
-                
-                self.lista_tokens.append("-")    
+                self.columna = self.columna + 1
+                self.lista_tokens.append(clase_token("-",self.linea,self.columna))    
             elif letra == "<":
                 self.quitar_primera_letra()
-                self.lista_tokens.append("<") 
+                self.columna = self.columna + 1
+                self.lista_tokens.append(clase_token("<",self.linea,self.columna)) 
             elif letra == ">":
                 
                 self.quitar_primera_letra()
-                
-                self.lista_tokens.append(">")
+                self.columna = self.columna + 1
+                self.lista_tokens.append(clase_token(">",self.linea,self.columna))
 
                 if objeto.tipo != "":
                     #print(objeto.tipo,objeto.valor)
@@ -157,14 +183,16 @@ class analizar_form:
 
             elif letra == ":":
                 self.quitar_primera_letra()
-                self.lista_tokens.append(":")
+                self.columna = self.columna + 1
+                self.lista_tokens.append(clase_token(":",self.linea,self.columna))
             elif letra == "'":
                 lectura = self.comillas_s0()
                 #print(lectura)
                 
                 objeto.valores.append(lectura) 
                 #print(objeto.valores)
-                self.lista_tokens.append(lectura)
+                self.columna = self.columna + len(lectura)
+                self.lista_tokens.append(clase_token(lectura,self.linea,self.columna))
 
 
 
@@ -191,26 +219,31 @@ class analizar_form:
                     objeto.nombre = lectura
                     #print(lectura)    
 
-
-                self.lista_tokens.append(lectura)
+                self.columna = self.columna + len(lectura)
+                self.lista_tokens.append(clase_token(lectura,self.linea,self.columna))
             elif letra == ",":
                 self.quitar_primera_letra()
                 
                 
 
-                       
-                self.lista_tokens.append(",")
+                self.columna = self.columna + 1       
+                self.lista_tokens.append(clase_token(",",self.linea,self.columna))
             elif letra == "\n" or letra == "\t" or letra == " ":
                 if letra== "\n":
                    # print(lectura)
                     self.linea=self.linea+1
-                    self.tokens_encontados= self.reportes(self.linea,self.lista_tokens)
+                    self.columna = 0
                    # print(self.linea)
+                else:
+                    self.columna = self.columna + 1
                 self.quitar_primera_letra()
 
             else:
+                err = self.leer_letra()
                 self.quitar_primera_letra()
-                print({"error":letra}) 
+
+                self.lista_errores.append(clase_token(err,self.linea,self.columna))
+                print({"error":err}) 
         #print(self.lista_tokens)
         #valor = objeto.imprimir()
        # print(valor)
@@ -300,13 +333,19 @@ class analizar_form:
             #print({"errro_valor":tipo})
             return ""
 
-    def reportes(self,linea,tokens):
-        linea=linea
-        tokens_detectados=""
-        for i in tokens:
-            tokens_detectados=tokens_detectados+i
-            print(i)
-            return tokens_detectados
+    def reportes(self):
+        retorno = "LEXEMA --- LINEA --- COLUMNA \n"
+        for token in self.lista_tokens:
+           retorno = retorno + token.string() + "\n"
+
+        return retorno
+
+    def reportes_errores(self):
+        retorno = "LEXEMA --- LINEA --- COLUMNA \n"
+        for token in self.lista_errores:
+           retorno = retorno + token.string() + "\n"
+
+        return retorno
        
 
 

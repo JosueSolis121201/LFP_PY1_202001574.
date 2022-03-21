@@ -4,6 +4,10 @@ formulario ~>>[
         tipo:"etiqueta"
     >,
     <
+        valor:"nombre2:",
+        tipo:"etiqueta"
+    >,
+    <
         tipo:"texto",
         valor:"nombre",
         fondo:"ingrese nombre"

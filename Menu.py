@@ -7,7 +7,7 @@ from analizar_archivo import analizar_form
 
 class programa():
     def __init__(self):
-        self.reportes()
+        self.menu()
        
 
     def menu(self):
@@ -15,7 +15,7 @@ class programa():
         
         inicio = "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"estilo.css\" media=\"screen\" /></head><body>"
        
-        print(datos.string_html)
+        #print(datos.string_html)
        
         final = inicio + datos.string_html  + "</tbody></table></html></body>"
         f = open ('report_202001574.html','w')
@@ -38,9 +38,9 @@ class programa():
             <div><button> Analizar</button></div>
             </div>
             </div>"""
-        print(datos.tokens_encontados)
+        #print(datos.tokens_encontados)
 
-        print(+html_producto)
+        #print(+html_producto)
 
 
             
@@ -50,4 +50,4 @@ class programa():
         f = open ('report_202001574.html','w')
         f.write(final)
         f.close()
-a=programa()
+#a=programa()
