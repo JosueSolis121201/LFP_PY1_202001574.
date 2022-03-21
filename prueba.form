@@ -1,7 +1,7 @@
 formulario ~>>[
     <
-        tipo:"etiqueta",
-        valor:"nombre:"
+        valor:"nombre:",
+        tipo:"etiqueta"
     >,
     <
         tipo:"texto",
